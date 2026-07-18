@@ -1,0 +1,41 @@
+@typeparam TItem
+
+<div class="table-responsive">
+    <table class="table table-bordered table-sm bg-white mt-3">
+        <thead style="background-color: #000080; color: white;">
+        <tr>
+            @HeaderTemplate
+        </tr>
+        </thead>
+        <tbody>
+        @if (Items == null || !Items.Any())
+        {
+            <tr>
+                <td colspan="100" class="text-center p-3" style="background-color: #ffffcc;">
+                    No records found.
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var item in Items)
+            {
+                <tr>
+                    @RowTemplate(item)
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public IReadOnlyList<TItem> Items { get; set; } = Array.Empty<TItem>();
+
+    [Parameter, EditorRequired]
+    public RenderFragment HeaderTemplate { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public RenderFragment<TItem> RowTemplate { get; set; } = null!;
+}

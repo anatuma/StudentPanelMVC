@@ -1,0 +1,8 @@
+<div class="border border-dark p-2 my-3" style="background-color: #ffffcc;">
+    <strong>Loading...</strong> @LoadingMessage
+</div>
+
+@code {
+    [Parameter]
+    public string LoadingMessage { get; set; } = "Please wait.";
+}

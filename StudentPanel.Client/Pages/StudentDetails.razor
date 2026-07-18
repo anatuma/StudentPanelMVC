@@ -1,0 +1,181 @@
+@page "/students/{id:int}"
+@using System.ComponentModel.DataAnnotations
+@using StudentPanel.Shared.DTOs
+@inject StudentsApiClient ApiClient
+@inject IJSRuntime JsRuntime
+
+<PageTitle>Student Details</PageTitle>
+
+<h1 style="color: #000080;">Student Details</h1>
+
+@if (_loading)
+{
+    <LoadingPanel LoadingMessage="Loading student details from API." />
+}
+else if (_student == null)
+{
+    <ApiError ErrorMessage="Student was not found." />
+}
+else
+{
+    <table class="table table-bordered bg-white">
+        <tbody>
+        <tr>
+            <th style="width: 180px; background-color: #ffffcc;">Index</th>
+            <td>@_student.IndexNumber</td>
+        </tr>
+        <tr>
+            <th style="background-color: #ffffcc;">Name</th>
+            <td>@_student.FirstName @_student.LastName</td>
+        </tr>
+        <tr>
+            <th style="background-color: #ffffcc;">Email</th>
+            <td>
+                @_student.Email
+                <button class="btn btn-sm btn-secondary ms-2" @onclick="CopyEmailToClipboard">
+                    Copy email
+                </button>
+                @if (_showCopyFeedback)
+                {
+                    <span class="text-success ms-2">Copied</span>
+                }
+            </td>
+        </tr>
+        <tr>
+            <th style="background-color: #ffffcc;">Semester</th>
+            <td>@_student.Semester</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2 style="color: #000080;">Assign Course</h2>
+
+    <EditForm Model="_assignment" OnValidSubmit="HandleCourseAssignment">
+        <DataAnnotationsValidator />
+
+        <div class="border border-dark p-2 bg-white">
+            <InputSelect class="form-select mb-2" @bind-Value="_assignment.CourseId">
+                <option value="0">Select course</option>
+                @foreach (var course in _availableCourses)
+                {
+                    <option value="@course.Id">@course.Name (@course.Ects ECTS)</option>
+                }
+            </InputSelect>
+
+            <ValidationMessage For="() => _assignment.CourseId" class="text-danger" />
+
+            @if (!string.IsNullOrWhiteSpace(_assignmentError))
+            {
+                <ApiError ErrorMessage="@_assignmentError" />
+            }
+
+            <button type="submit" class="btn btn-primary mt-2">Assign</button>
+        </div>
+    </EditForm>
+
+    <h2 class="mt-4" style="color: #000080;">Assigned Courses</h2>
+
+    @if (!_assignedCourses.Any())
+    {
+        <div class="border border-dark p-2" style="background-color: #ffffcc;">
+            No courses assigned.
+        </div>
+    }
+    else
+    {
+        <DataTable TItem="CourseDto" Items="_assignedCourses">
+            <HeaderTemplate>
+                <th>Name</th>
+                <th>ECTS</th>
+            </HeaderTemplate>
+            <RowTemplate Context="course">
+                <td>@course.Name</td>
+                <td>@course.Ects</td>
+            </RowTemplate>
+        </DataTable>
+    }
+}
+
+@code {
+    [Parameter] [Range(1, int.MaxValue)] public int Id { get; set; }
+
+    private StudentDto? _student;
+    private List<CourseDto> _assignedCourses = new();
+    private List<CourseDto> _availableCourses = new();
+    private readonly StudentCourseDto _assignment = new();
+
+    private bool _loading = true;
+    private bool _showCopyFeedback;
+    private bool _copyEmailAfterRender;
+    private string? _pendingClipboardEmail;
+    private string? _assignmentError;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+        _assignmentError = null;
+
+        try
+        {
+            var details = await ApiClient.GetStudentDetailsAsync(Id);
+            _student = details.Student;
+            _assignedCourses = details.Courses;
+            _availableCourses = await ApiClient.GetCoursesAsync();
+            _assignment.CourseId = 0;
+        }
+        catch
+        {
+            _student = null;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_copyEmailAfterRender || string.IsNullOrWhiteSpace(_pendingClipboardEmail))
+        {
+            return;
+        }
+
+        _copyEmailAfterRender = false;
+
+        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", _pendingClipboardEmail);
+
+        _showCopyFeedback = true;
+        StateHasChanged();
+
+        await Task.Delay(2000);
+
+        _showCopyFeedback = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleCourseAssignment()
+    {
+        _assignmentError = null;
+
+        try
+        {
+            await ApiClient.AssignCourseAsync(Id, _assignment.CourseId);
+            await OnParametersSetAsync();
+        }
+        catch (Exception ex)
+        {
+            _assignmentError = ex.Message;
+        }
+    }
+
+    private void CopyEmailToClipboard()
+    {
+        if (_student == null)
+        {
+            return;
+        }
+
+        _pendingClipboardEmail = _student.Email;
+        _copyEmailAfterRender = true;
+    }
+}

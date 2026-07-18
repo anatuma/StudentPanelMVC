@@ -1,0 +1,8 @@
+<div class="border border-dark p-2 my-3" style="background-color: #ffcccc;" role="alert">
+    <strong>Error:</strong> @ErrorMessage
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string ErrorMessage { get; set; } = string.Empty;
+}

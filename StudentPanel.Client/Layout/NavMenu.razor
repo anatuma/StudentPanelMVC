@@ -1,0 +1,30 @@
+@inject StateContainer State
+@implements IDisposable
+
+<div class="border-bottom border-dark px-3 py-2" style="background-color: #000080; color: white;">
+    <div class="d-flex flex-wrap align-items-center gap-3">
+        <a class="fw-bold text-white text-decoration-none" href="">Student Panel</a>
+
+        <NavLink class="text-white" href="" Match="NavLinkMatch.All">Home</NavLink>
+        <NavLink class="text-white" href="students">Students</NavLink>
+        <NavLink class="text-white" href="students/create">Create</NavLink>
+        <NavLink class="text-white" href="observed">Observed (@State.ObservedStudents.Count)</NavLink>
+    </div>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        State.OnChange += OnStateContainerChanged;
+    }
+
+    private void OnStateContainerChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= OnStateContainerChanged;
+    }
+}

@@ -1,0 +1,35 @@
+@page "/observed"
+@using StudentPanel.Shared.DTOs
+@inject StateContainer State
+
+<PageTitle>Observed Students</PageTitle>
+
+<h1 style="color: #000080;">Observed Students</h1>
+
+@if (!State.ObservedStudents.Any())
+{
+    <div class="border border-dark p-3" style="background-color: #ffffcc;">
+        No students are observed.
+    </div>
+}
+else
+{
+    <DataTable TItem="StudentDto" Items="State.ObservedStudents">
+        <HeaderTemplate>
+            <th>Index</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Action</th>
+        </HeaderTemplate>
+        <RowTemplate Context="student">
+            <td>@student.IndexNumber</td>
+            <td>@student.FirstName @student.LastName</td>
+            <td>@student.Email</td>
+            <td>
+                <button class="btn btn-sm btn-warning" @onclick="() => State.RemoveObservedStudent(student.Id)">
+                    Remove
+                </button>
+            </td>
+        </RowTemplate>
+    </DataTable>
+}

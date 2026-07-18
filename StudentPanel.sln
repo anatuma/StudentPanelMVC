@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentPanel.Shared", "StudentPanel.Shared\StudentPanel.Shared.csproj", "{6C3ACCF5-D9CF-474B-A2FE-5BAE6F1D03DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentPanel.Api", "StudentPanel.Api\StudentPanel.Api.csproj", "{8E1B9E8F-058C-4808-8141-7A300E458FCC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentPanel.Client", "StudentPanel.Client\StudentPanel.Client.csproj", "{4521483B-74A2-420F-83AA-04DCDCA142DE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6C3ACCF5-D9CF-474B-A2FE-5BAE6F1D03DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C3ACCF5-D9CF-474B-A2FE-5BAE6F1D03DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C3ACCF5-D9CF-474B-A2FE-5BAE6F1D03DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C3ACCF5-D9CF-474B-A2FE-5BAE6F1D03DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E1B9E8F-058C-4808-8141-7A300E458FCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E1B9E8F-058C-4808-8141-7A300E458FCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E1B9E8F-058C-4808-8141-7A300E458FCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E1B9E8F-058C-4808-8141-7A300E458FCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4521483B-74A2-420F-83AA-04DCDCA142DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4521483B-74A2-420F-83AA-04DCDCA142DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4521483B-74A2-420F-83AA-04DCDCA142DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4521483B-74A2-420F-83AA-04DCDCA142DE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

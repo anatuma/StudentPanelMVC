@@ -1,0 +1,89 @@
+@page "/students"
+@using StudentPanel.Shared.DTOs
+@inject StudentsApiClient ApiClient
+@inject StateContainer State
+
+<PageTitle>Students</PageTitle>
+
+<h1 style="color: #000080;">Students</h1>
+
+<p>
+    <a class="btn btn-sm btn-primary" href="students/create">Add student</a>
+</p>
+
+<ErrorBoundary @ref="_errorBoundary">
+    <ChildContent>
+        @if (_hasError)
+        {
+            <ApiError ErrorMessage="@_errorMessage" />
+        }
+        else if (_students == null)
+        {
+            <LoadingPanel LoadingMessage="Loading students from API." />
+        }
+        else
+        {
+            <DataTable TItem="StudentDto" Items="_students">
+                <HeaderTemplate>
+                    <th>Index</th>
+                    <th>First name</th>
+                    <th>Last name</th>
+                    <th>Email</th>
+                    <th>Semester</th>
+                    <th>Actions</th>
+                </HeaderTemplate>
+                <RowTemplate Context="student">
+                    <td>@student.IndexNumber</td>
+                    <td>@student.FirstName</td>
+                    <td>@student.LastName</td>
+                    <td>@student.Email</td>
+                    <td>@student.Semester</td>
+                    <td>
+                        <a class="btn btn-sm btn-secondary" href="students/@student.Id">Details</a>
+
+                        @if (State.IsObserved(student.Id))
+                        {
+                            <button class="btn btn-sm btn-warning" @onclick="() => State.RemoveObservedStudent(student.Id)">
+                                Unobserve
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-sm btn-success" @onclick="() => State.AddObservedStudent(student)">
+                                Observe
+                            </button>
+                        }
+                    </td>
+                </RowTemplate>
+            </DataTable>
+        }
+    </ChildContent>
+    <ErrorContent Context="ex">
+        <ApiError ErrorMessage="@ex.Message" />
+    </ErrorContent>
+</ErrorBoundary>
+
+@code {
+    private ErrorBoundary? _errorBoundary;
+    private List<StudentDto>? _students;
+    private bool _hasError;
+    private string _errorMessage = "";
+
+    protected override void OnParametersSet()
+    {
+        _errorBoundary?.Recover();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _students = await ApiClient.GetStudentsAsync();
+        }
+        catch (Exception ex)
+        {
+            _hasError = true;
+            _errorMessage = $"Unable to load students: {ex.Message}";
+        }
+    }
+}

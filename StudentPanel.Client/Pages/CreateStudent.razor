@@ -1,0 +1,89 @@
+@page "/students/create"
+@using StudentPanel.Shared.DTOs
+@inject StudentsApiClient ApiClient
+@inject NavigationManager Navigation
+
+<PageTitle>Create Student</PageTitle>
+
+<h1 style="color: #000080;">Create Student</h1>
+
+<EditForm Model="_newStudent" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary class="border border-dark p-2" style="background-color: #ffcccc;" />
+
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
+    {
+        <ApiError ErrorMessage="@_errorMessage" />
+    }
+
+    <table class="table table-bordered bg-white">
+        <tbody>
+        <tr>
+            <th style="width: 180px; background-color: #ffffcc;">Index number</th>
+            <td>
+                <InputText class="form-control" @bind-Value="_newStudent.IndexNumber" />
+                <ValidationMessage For="() => _newStudent.IndexNumber" class="text-danger" />
+            </td>
+        </tr>
+        <tr>
+            <th style="background-color: #ffffcc;">First name</th>
+            <td>
+                <InputText class="form-control" @bind-Value="_newStudent.FirstName" />
+                <ValidationMessage For="() => _newStudent.FirstName" class="text-danger" />
+            </td>
+        </tr>
+        <tr>
+            <th style="background-color: #ffffcc;">Last name</th>
+            <td>
+                <InputText class="form-control" @bind-Value="_newStudent.LastName" />
+                <ValidationMessage For="() => _newStudent.LastName" class="text-danger" />
+            </td>
+        </tr>
+        <tr>
+            <th style="background-color: #ffffcc;">Email</th>
+            <td>
+                <InputText class="form-control" @bind-Value="_newStudent.Email" type="email" />
+                <ValidationMessage For="() => _newStudent.Email" class="text-danger" />
+            </td>
+        </tr>
+        <tr>
+            <th style="background-color: #ffffcc;">Semester</th>
+            <td>
+                <InputNumber class="form-control" @bind-Value="_newStudent.Semester" min="1" max="8" />
+                <ValidationMessage For="() => _newStudent.Semester" class="text-danger" />
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
+        @(_isSubmitting ? "Saving..." : "Save")
+    </button>
+    <a class="btn btn-secondary" href="students">Cancel</a>
+</EditForm>
+
+@code {
+    private readonly StudentDto _newStudent = new();
+    private string? _errorMessage;
+    private bool _isSubmitting;
+
+    private async Task HandleValidSubmit()
+    {
+        _isSubmitting = true;
+        _errorMessage = null;
+
+        try
+        {
+            var createdStudent = await ApiClient.CreateStudentAsync(_newStudent);
+            Navigation.NavigateTo($"/students/{createdStudent.Id}");
+        }
+        catch (Exception)
+        {
+            _errorMessage = "Unable to create student. Check the data and make sure the API is running.";
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+}
