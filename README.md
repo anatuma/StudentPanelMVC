@@ -1,8 +1,8 @@
 # Student Panel
 
-A Blazor WebAssembly front end talking to a minimal ASP.NET Core API — because sometimes you want the UI in the browser and the logic on the server, and you're not apologizing for it.
+A Blazor WebAssembly front end talking to a minimal ASP.NET Core API.
 
-Browse students, open details, add new ones, assign courses, and mark favorites as "observed." The API uses in-memory data (no database drama for a UI-focused demo). The client shows real HTTP communication through a typed API client.
+Browse students, open details, add new ones, assign courses and mark favorites as "observed." The API uses in-memory data. The client shows real HTTP communication through a typed API client.
 
 ## What it does
 
